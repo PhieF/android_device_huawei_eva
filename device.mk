@@ -175,4 +175,4 @@ PRODUCT_PACKAGES += \
     wpa_supplicant.conf
 
 $(call inherit-product, frameworks/native/build/phone-xxhdpi-3072-dalvik-heap.mk)
-$(call inherit-product, frameworks/native/build/phone-xxhdpi-3072-hwui-memory.mk)
+
