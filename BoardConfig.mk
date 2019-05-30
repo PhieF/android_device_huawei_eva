@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2016 The CyanogenMod Project
+# Copyright (C) 2018 CarbonRom
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,10 +12,24 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+#
 
-LOCAL_PATH := device/huawei/eva
+# Platform Path
+PLATFORM_PATH := device/huawei/eva
 
-# Architecture
+# Generic A-only Target
+include build/make/target/board/generic_arm64_a/BoardConfig.mk
+
+TARGET_RECOVERY_FSTAB := $(PLATFORM_PATH)/rootdir/etc/fstab.kirin
+
+# Kernel
+BOARD_KERNEL_IMAGE_NAME := Image
+TARGET_NO_KERNEL := true
+PRODUCT_FULL_TREBLE := true
+BOARD_VNDK_VERSION := current
+
+
+# Platform
 TARGET_ARCH := arm64
 TARGET_ARCH_VARIANT := armv8-a
 TARGET_CPU_ABI := arm64-v8a
@@ -28,148 +42,84 @@ TARGET_2ND_CPU_ABI := armeabi-v7a
 TARGET_2ND_CPU_ABI2 := armeabi
 TARGET_2ND_CPU_VARIANT := cortex-a53
 
-TARGET_CPU_SMP := true
-ARCH_ARM_HAVE_TLS_REGISTER := true
-ARCH_ARM_HAVE_NEON := true
-ARCH_ARM_HIGH_OPTIMIZATION := true
-TARGET_USES_64_BIT_BINDER := true
-
-TARGET_BOARD_PLATFORM := hi3650
-BOARD_VENDOR_PLATFORM := hi3650
-
-# Enable CPUSETS
-ENABLE_CPUSETS := true
-
-# Enable SCHEDBOOST
-ENABLE_SCHEDBOOST := true
-
-TARGET_SPECIFIC_HEADER_PATH := $(LOCAL_PATH)/include
-
-# Assert
-TARGET_OTA_ASSERT_DEVICE := hi3650,eva,EVA,EVA-L09,EVA-L29,EVA-L19
-
-# Audio
-BOARD_USES_ALSA_AUDIO := true
-TARGET_PROVIDES_LIBAUDIO := true
-BOARD_USES_GENERIC_AUDIO := false
-BOARD_SUPPORTS_SOUND_TRIGGER := true
-
-# Bootloader
-TARGET_BOOTLOADER_BOARD_NAME := hi3650
-TARGET_NO_BOOTLOADER := true
-TARGET_NO_RADIOIMAGE := true
+# Kernel
+BOARD_KERNEL_BASE := 0x00078000
+BOARD_KERNEL_CMDLINE := loglevel=4 initcall_debug=n slub_min_objects=16 page_tracker=on unmovable_isolate1=2:192M,3:224M,4:256M printktimer=0xfff0a000,0x534,0x538 androidboot.selinux=permissive
+BOARD_KERNEL_IMAGE_NAME := Image.gz
+BOARD_KERNEL_OFFSET := 0x00008000
+BOARD_KERNEL_OS_PATCH_LEVEL := 2018-05-05
+BOARD_KERNEL_OS_VERSION := 8.0.0
+BOARD_KERNEL_PAGESIZE := 2048
+BOARD_KERNEL_SECOND_OFFSET := 0x00e88000
+BOARD_KERNEL_TAGS_OFFSET := 0x07988000
+BOARD_RAMDISK_OFFSET := 0x07b88000
+TARGET_KERNEL_TOOLCHAIN_ROOT := prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9/bin
+TARGET_KERNEL_TOOLS_PREFIX := $(TARGET_KERNEL_TOOLCHAIN_ROOT)/bin/aarch64-linux-android-
 
 # Bluetooth
+BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := $(PLATFORM_PATH)/bluetooth
 BOARD_HAVE_BLUETOOTH := true
-BOARD_HAVE_BLUETOOTH_BCM := true
-BOARD_BLUEDROID_VENDOR_CONF := $(LOCAL_PATH)/bluetooth/vnd_hi3650.txt
-BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := $(LOCAL_PATH)/bluetooth
-
-# Bootanimation
-TARGET_BOOTANIMATION_PRELOAD := true
-TARGET_BOOTANIMATION_TEXTURE_CACHE := true
-
-# Camera
-USE_DEVICE_SPECIFIC_CAMERA := true
-TARGET_SPECIFIC_CAMERA_PARAMETER_LIBRARY := libcamera_parameters_ext
 
 # Charger 
 BOARD_CHARGER_DISABLE_INIT_BLANK := true
-BACKLIGHT_PATH := /sys/class/leds/lcd_backlight0/brightness
+BACKLIGHT_PATH := "/sys/class/leds/lcd_backlight0/brightness"
+HEALTHD_BACKLIGHT_LEVEL := 102
+HEALTHD_FORCE_BACKLIGHT_CONTROL := true
 
-# CMHW
-BOARD_HARDWARE_CLASS := \
-    $(LOCAL_PATH)/cmhw \
-    hardware/cyanogen/cmhw
+# Charge Detection
+HEALTHD_ENABLE_HUAWEI_FASTCHG_CHECK := true
 
+# Extended Filesystem Support
+TARGET_EXFAT_DRIVER := exfat
+
+# Lineage hardware
+BOARD_HARDWARE_CLASS += \
+    $(PLATFORM_PATH)/lineagehw
+    
 # Display
-USE_OPENGL_RENDERER := true
-TARGET_HARDWARE_3D := true
-ANDROID_ENABLE_RENDERSCRIPT := true
+TARGET_USES_HWC2 := true
+
+# Binder
+TARGET_USES_64_BIT_BINDER := true
+
+# Cpuset
+ENABLE_CPUSETS := true
+
+# Schedboost
+ENABLE_SCHEDBOOST := true
+
+# Graphics
 NUM_FRAMEBUFFER_SURFACE_BUFFERS := 3
-TARGET_USES_ION := true
+OVERRIDE_RS_DRIVER := libRSDriverArm.so
+HWUI_COMPILE_SYMBOLS := true
 
-# GPS
-USE_DEVICE_SPECIFIC_GPS := true
-TARGET_NO_RPC := true
+# linker
+TARGET_NEEDS_PLATFORM_TEXT_RELOCATIONS := true
 
-# NFC
-TARGET_USES_NQ_NFC := true
-BOARD_NFC_CHIPSET := pn548
-NXP_CHIP_TYPE := 2
-
-# Kernel
-BOARD_KERNEL_BASE := 0x00478000
-BOARD_KERNEL_PAGESIZE := 2048
-BOARD_KERNEL_CMDLINE := loglevel=4 page_tracker=on androidboot.selinux=permissive
-BOARD_MKBOOTIMG_ARGS := --kernel_offset 0x00008000 --ramdisk_offset 0x07b88000 --tags_offset 0x07588000
-TARGET_KERNEL_ARCH := arm64
-TARGET_KERNEL_CROSS_COMPILE_PREFIX := aarch64-linux-android-
-TARGET_KERNEL_HEADER_ARCH := arm64
-
-TARGET_KERNEL_SOURCE := kernel/huawei/hi3650
-TARGET_KERNEL_CONFIG := hisi_3650_defconfig
-
-# Lights
-TARGET_PROVIDES_LIBLIGHT := true
-
-# Partitions
-BOARD_HAS_LARGE_FILESYSTEM := true
-BOARD_CACHEIMAGE_FILE_SYSTEM_TYPE := ext4
-BOARD_PERSISTIMAGE_FILE_SYSTEM_TYPE := ext4
-TARGET_USERIMAGES_USE_EXT4 := true
-TARGET_USERIMAGES_USE_F2FS := true
-BOARD_BOOTIMAGE_PARTITION_SIZE := 33554432
-BOARD_RECOVERYIMAGE_PARTITION_SIZE := 67108864
-BOARD_SYSTEMIMAGE_PARTITION_SIZE := 2080374784
-BOARD_USERDATAIMAGE_PARTITION_SIZE := 26935820288
-BOARD_CACHEIMAGE_PARTITION_SIZE := 268435456
-BOARD_PERSISTIMAGE_PARTITION_SIZE := 2097152
-BOARD_FLASH_BLOCK_SIZE := 131072
+# Audio
+BOARD_USES_ALSA_AUDIO := true
 
 # Properties
-TARGET_SYSTEM_PROP := $(LOCAL_PATH)/system.prop
+TARGET_SYSTEM_PROP := $(PLATFORM_PATH)/system.prop
 
-# Recovery
-TARGET_RECOVERY_FSTAB := $(LOCAL_PATH)/rootdir/fstab.hi3650
-TARGET_RECOVERY_DEVICE_MODULES := libinit_hi3650
+# Radio
+TARGET_PROVIDES_QTI_TELEPHONY_JAR := true
 
-# RIL
-TARGET_GLOBAL_CFLAGS += -DDISABLE_ASHMEM_TRACKING
-BOARD_RIL_CLASS := ../../../device/huawei/eva/ril
-PROTOBUF_SUPPORTED := true
-TARGET_RIL_VARIANT := proprietary
-
-# Enable WEBGL
-ENABLE_WEBGL := true
-
-# Vendor
-BOARD_NEEDS_VENDORIMAGE_SYMLINK := true
-TARGET_COPY_OUT_VENDOR := system
-
-# Vendor Init
-TARGET_UNIFIED_DEVICE := true
-TARGET_INIT_VENDOR_LIB := libinit_hi3650
-TARGET_LIBINIT_DEFINES_FILE := $(LOCAL_PATH)/init/init_eva.cpp
+# Release tools
+# TARGET_RELEASETOOLS_EXTENSIONS := $(PLATFORM_PATH)/releasetools
 
 # Sepolicy
-BOARD_SEPOLICY_DIRS += \
-	device/huawei/eva/sepolicy
+BOARD_PLAT_PRIVATE_SEPOLICY_DIR += $(PLATFORM_PATH)/sepolicy/private
+BOARD_PLAT_PUBLIC_SEPOLICY_DIR += $(PLATFORM_PATH)/sepolicy/public
 
-# Wifi
-TARGET_USES_64_BIT_BCMDHD	 := true
-BOARD_WLAN_DEVICE                := bcmdhd
-BOARD_WLAN_DEVICE_REV            := bcm4345
-WPA_SUPPLICANT_VERSION           := VER_0_8_X
-BOARD_WPA_SUPPLICANT_DRIVER      := NL80211
-BOARD_WPA_SUPPLICANT_PRIVATE_LIB := lib_driver_cmd_bcmdhd
-BOARD_HOSTAPD_DRIVER             := NL80211
-BOARD_HOSTAPD_PRIVATE_LIB        := lib_driver_cmd_bcmdhd
-WIFI_DRIVER_FW_PATH_PARAM        := "/sys/module/bcmdhd/parameters/firmware_path"
-WIFI_DRIVER_FW_PATH_STA          := "/vendor/firmware/fw_bcm43455_hw.bin"
-WIFI_DRIVER_FW_PATH_AP           := "/vendor/firmware/fw_bcm43455_apsta_hw.bin"
-WIFI_DRIVER_FW_PATH_P2P          := "/vendor/firmware/fw_bcm43455_hw.bin"
-WIFI_BAND                        := 802_11_ABG
+# Shims
+TARGET_LD_SHIM_LIBS := \
+    /system/lib64/libdisplayenginesvc_1_0.so|libshims_hwsmartdisplay_jni.so \
+    /system/lib64/libdisplayenginesvc_1_1.so|libshims_hwsmartdisplay_jni.so \
+    /system/lib64/libhwpwmanager_jni.so|libshims_hwsmartdisplay_jni.so \
+    /system/lib64/libhwsmartdisplay_jni.so|libshims_hwsmartdisplay_jni.so
 
-# inherit from the proprietary version
--include vendor/huawei/eva/BoardConfigVendor.mk
+# System size
+BOARD_KERNELIMAGE_PARTITION_SIZE := 15800132
+BOARD_RAMDISKIMAGE_PARTITION_SIZE := 10533422
+BOARD_SYSTEMIMAGE_PARTITION_SIZE := 2000000000	# 2.0 GB
